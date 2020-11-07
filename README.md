@@ -8,7 +8,8 @@ This repository contains sub components to bring up `Node.js` web application in
 * [nodejs-hello-world](#nodejs-hello-world)
 * [Packer](#packer)
 * [Terraform](#terraform)
-* [CI/CD](#prerequisites)
+* [CI/CD](#ci/cd)
+* [Demo](#demo)
   
 
 <!-- ABOUT THE PROJECT -->
