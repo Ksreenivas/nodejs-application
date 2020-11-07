@@ -1,0 +1,11 @@
+# Ignore all logfiles and tempfiles.
+/log/*
+!/log/.keep
+/tmp
+nohup.out
+
+# Ignore OS X files
+.DS_Store
+
+# Add .terraform
+terraform/.terraform

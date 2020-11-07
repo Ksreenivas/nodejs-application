@@ -1,0 +1,185 @@
+#!/usr/bin/env groovy
+
+pipeline {
+ 
+    agent {
+        node {
+            label 'cicd-flavour' 
+        }
+    }
+     environment {
+        
+        //put your own environment variables
+        REGISTRY_URI = 'docker.io'
+        REGISTRY_NAME = 'sreenivask'
+        IMAGE_NAME = 'nodejs-helloworld:latest'
+        USERNAME = 'sreenivask'
+        PASSWORD = 'xxxxxxxxxx'
+    }
+    stages {
+        stage('Initial Notification') {
+            steps {
+                 //put webhook for your notification channel 
+                 echo 'Pipeline Start Notification'
+                 sh """
+                 echo 'Utility_scritps to clone the Node.js web applicaiton repository'
+                 """
+            }
+        }
+        stage('Docker Lint') {           
+            steps {
+               //put your code scanner 
+                echo 'Docker lint'
+                sh """
+                docker run --rm -i hadolint/hadolint < ./Dockerfile  
+                echo $?
+                """
+            }
+        }
+ 
+        stage('Docker Test') {
+            steps {
+                //put your Testing
+                echo 'Execute Test script sh file'
+            }
+            post{
+                success{
+                    echo "Post the status to Developer"
+                }
+                failure{
+                    echo "Post status to Developer and stop"
+                }
+            }
+        }
+        stage("Build"){
+            steps {
+                steps {
+                    withCredentials([usernamePassword(credentialsId: 'YOUR_ID_DEFINED', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        sh """
+                        docker login ${REGISTRY_URI} -u ${USERNAME} -p ${PASSWORD}
+                        """
+                    }
+                echo "Docker Build"
+
+                sh """
+                docker build -t ${IMAGE_NAME}:${VERSION_PREFIX}${BUILD_NUMBER} ${WORKSPACE} -f Dockerfile
+                """
+
+                echo "Docker Tag"
+
+                sh """
+                docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_URI}/${REGISTRY_NAME}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT}
+                docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_URI}/${REGISTRY_NAME}/${IMAGE_NAME}:${GIT_BRANCH}-${BUILD_NUMBER}
+                docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_URI}/${REGISTRY_NAME}/${IMAGE_NAME}:${GIT_BRANCH}-${LATEST}
+                """
+                                
+                echo "Docker Push"
+
+                sh """
+                docker push ${REGISTRY_URI}/${REGISTRY_NAME}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT}
+                docker push ${REGISTRY_URI}/${REGISTRY_NAME}/${IMAGE_NAME}:${GIT_BRANCH}-${BUILD_NUMBER}
+                docker push ${REGISTRY_URI}/${REGISTRY_NAME}/${IMAGE_NAME}:${GIT_BRANCH}-${LATEST}
+                """
+
+            }
+            post{
+                success{
+                    echo "Build and Push Successfully"
+                }
+                failure{
+                    echo "Build and Push Failed"
+                }
+            }
+        }
+        stage('Quality Gates') {
+            steps {
+                //Health Check
+                echo 'Health Check: Shell script to run health check /ping and /health endpoint'
+
+                //Logging Gate
+                echo 'Shell script to check logging is done properly or not'
+
+                //Instrumentation Gate
+                echo 'Shell script to check if all the norms are followed or not'
+
+                //Documentation Gate
+                echo 'Script to check Readme.md and documentation have been created'
+
+                //Security Gate
+                echo 'Scan the images for security vulnerabilities'                
+
+            }
+            post{
+                success{
+                    echo "Quality Gate Successfully"
+                }
+                failure{
+                    echo "Quality Gate Failed"
+                }
+            }
+        }
+        
+        stage("Deploy to Staging"){
+                    when {
+                        branch 'staging'
+                    }
+                    steps {
+
+                        echo "DEPLOY Node.js application"
+                        // helm way 
+                        // helm lint .
+                        // helm install {chart-name} .
+                        sh """
+                        docker pull docker.io/sreenivask/nodejs-helloworld
+                        docker run -p 8080:8080 -d nodejs-helloworld:latest
+                        """
+                    }
+                    post{
+                        success{
+                            echo "Successfully deployed to Staging"
+                        }
+                        failure{
+                            echo "Failed deploying to Staging"
+                        }
+                    }
+                }
+        }
+         stage("Deploy to Production"){
+            when {
+                branch 'master'
+            }
+            steps { 
+                        echo "DEPLOY Node.js application"
+                        // helm way 
+                        // helm lint .
+                        // helm install {chart-name} .
+                        sh """
+                        docker pull docker.io/sreenivask/nodejs-helloworld
+                        docker run -p 8080:8080 -d nodejs-helloworld:latest
+                        """
+            }
+            post{
+                success{
+                    echo "Successfully deployed to Production"
+                }
+                failure{
+                    echo "Failed deploying to Production"
+                }
+            }
+        }
+
+    post{
+        always{
+            cleanWs()
+        }
+        success{
+            //notification webhook
+            echo 'Pipeline Execution Successfully Notification'
+        }
+        failure{
+            //notification webhook
+            echo 'Pipeline Execution Failed Notification'
+        }
+    }
+    }
+}

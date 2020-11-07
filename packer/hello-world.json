@@ -1,0 +1,43 @@
+{
+  "variables": {
+    "region": "us-east-1"
+  },
+  "builders": [{
+    "ami_name": "nodejs-{{isotime | clean_resource_name}}",
+    "ami_description": "An Ubuntu AMI that has Node.js installed and docker image created locally.",
+    "instance_type": "t2.micro",
+    "region": "{{user `region`}}",
+    "type": "amazon-ebs",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "architecture": "x86_64",
+        "name": "*ubuntu-xenial-16.04-amd64-server-*",
+        "block-device-mapping.volume-type": "gp2",
+        "root-device-type": "ebs"
+      },
+      "owners": ["099720109477"],
+      "most_recent": true
+    },
+    "ssh_username": "ubuntu"
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "echo 'Sleeping for 30 seconds to give Ubuntu enough time to initialize (otherwise, packages may fail to install).'",
+      "sleep 30"
+    ]
+  },{
+    "type": "file",
+    "source": "{{template_dir}}/../nodejs-hello-world",
+    "destination": "/home/ubuntu"
+  },{
+    "type": "shell",
+    "script": "{{template_dir}}/install-docker.sh"
+  },{
+    "type": "shell",
+    "inline": [
+      "cd /home/ubuntu/nodejs-hello-world"
+    ]
+  }]
+}

@@ -1,0 +1,60 @@
+pipeline {
+    agent {
+        node {
+            label 'packer' 
+        }
+    }
+  stages {
+    stage('Create Packer AMI') {
+        steps {
+          withCredentials([
+            usernamePassword(credentialsId: 'YOUR_ID_DEFINED', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')
+          ]) {
+            sh '''
+               export AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXX
+               export AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+               export AWS_DEFAULT_REGION="us-east-1"
+               packer inspect hello-world.json
+               packer validate hello-world.json
+               packer build hello-world.json
+            '''
+        }
+      }
+    }
+    stage('Deploy Node.js Web-Application') {
+      steps {
+          withCredentials([
+            usernamePassword(credentialsId: 'YOUR_ID_DEFINED', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME'),
+            usernamePassword(credentialsId: 'YOUR_ID_DEFINED', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME'),
+          ]) {
+            sh 'rm -rf terraform'
+            sh 'git clone https://https://github.com/Ksreenivas/nodejs-application.git'
+            sh '''
+               cd terraform
+               export AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXX
+               export AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+               export AWS_DEFAULT_REGION="us-east-1"
+               make init
+               make apply -auto-approve
+            '''
+        }
+      }
+        post{
+            always{
+                cleanWs()
+            }
+            success{
+                //notification webhook
+                echo 'Pipeline Execution Successfully Notification'
+            }
+            failure{
+                //notification webhook
+                echo 'Pipeline Execution Failed Notification'
+            }
+        }
+    }
+  }
+  environment {
+    region = 'us-east-1'
+  }
+}
