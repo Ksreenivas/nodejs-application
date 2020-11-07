@@ -50,3 +50,7 @@ This [CI/CD](https://github.com/Ksreenivas/nodejs-application/tree/main/ci_cd-pi
 ## Usage
 
 Dive into each folder's `README.md` file to have your node.js web application created.
+
+### Demo
+
+![](demo.png)
