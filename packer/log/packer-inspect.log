@@ -1,0 +1,20 @@
+packer git:(master) ✗ packer inspect hello-world.json
+Packer Inspect: JSON mode
+Optional variables and their defaults:
+
+  region = us-east-1
+
+Builders:
+
+  amazon-ebs
+
+Provisioners:
+
+  shell
+  file
+  shell
+  shell
+
+Note: If your build names contain user variables or template
+functions such as 'timestamp', these are processed at build time,
+and therefore only show in their raw form here.

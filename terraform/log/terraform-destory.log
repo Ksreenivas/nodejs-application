@@ -1,0 +1,149 @@
+--------------------------------------------------------------------------------------------
+---------------------------------------terraform destroy------------------------------------
+--------------------------------------------------------------------------------------------
+git:(master) ✗ terraform destroy
+module.nodejs_application.data.template_file.user_data: Refreshing state...
+data.aws_ami.ubuntu: Refreshing state...
+module.nodejs_application.aws_security_group.nodejs_app: Refreshing state... [id=sg-0e7e6387127c71c3b]
+module.nodejs_application.aws_instance.nodejs_app: Refreshing state... [id=i-0c979f32554b739bc]
+
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # module.nodejs_application.aws_instance.nodejs_app will be destroyed
+  - resource "aws_instance" "nodejs_app" {
+      - ami                          = "ami-05485d47014e7afb4" -> null
+      - arn                          = "arn:aws:ec2:us-east-1:240253503015:instance/i-0c979f32554b739bc" -> null
+      - associate_public_ip_address  = true -> null
+      - availability_zone            = "us-east-1d" -> null
+      - cpu_core_count               = 1 -> null
+      - cpu_threads_per_core         = 1 -> null
+      - disable_api_termination      = false -> null
+      - ebs_optimized                = false -> null
+      - get_password_data            = false -> null
+      - hibernation                  = false -> null
+      - id                           = "i-0c979f32554b739bc" -> null
+      - instance_state               = "running" -> null
+      - instance_type                = "t2.micro" -> null
+      - ipv6_address_count           = 0 -> null
+      - ipv6_addresses               = [] -> null
+      - key_name                     = "sowmya" -> null
+      - monitoring                   = false -> null
+      - primary_network_interface_id = "eni-06998f2aec7e230e9" -> null
+      - private_dns                  = "ip-172-31-88-115.ec2.internal" -> null
+      - private_ip                   = "172.31.88.115" -> null
+      - public_dns                   = "ec2-3-95-24-7.compute-1.amazonaws.com" -> null
+      - public_ip                    = "52.86.232.47" -> null
+      - secondary_private_ips        = [] -> null
+      - security_groups              = [
+          - "Example Node.js App",
+        ] -> null
+      - source_dest_check            = true -> null
+      - subnet_id                    = "subnet-b63cc097" -> null
+      - tags                         = {
+          - "Name" = "Example Node.js App"
+        } -> null
+      - tenancy                      = "default" -> null
+      - user_data                    = "28b5f111a48ab04e94225c7424d2b3865a635f3b" -> null
+      - volume_tags                  = {} -> null
+      - vpc_security_group_ids       = [
+          - "sg-0e7e6387127c71c3b",
+        ] -> null
+
+      - credit_specification {
+          - cpu_credits = "standard" -> null
+        }
+
+      - metadata_options {
+          - http_endpoint               = "enabled" -> null
+          - http_put_response_hop_limit = 1 -> null
+          - http_tokens                 = "optional" -> null
+        }
+
+      - root_block_device {
+          - delete_on_termination = true -> null
+          - device_name           = "/dev/sda1" -> null
+          - encrypted             = false -> null
+          - iops                  = 100 -> null
+          - volume_id             = "vol-0ad8c7bb1d2bbda33" -> null
+          - volume_size           = 8 -> null
+          - volume_type           = "gp2" -> null
+        }
+    }
+
+  # module.nodejs_application.aws_security_group.nodejs_app will be destroyed
+  - resource "aws_security_group" "nodejs_app" {
+      - arn                    = "arn:aws:ec2:us-east-1:240253503015:security-group/sg-0e7e6387127c71c3b" -> null
+      - description            = "A Security Group for Example Node.js App" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = ""
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+            },
+        ] -> null
+      - id                     = "sg-0e7e6387127c71c3b" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = ""
+              - from_port        = 22
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 22
+            },
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = ""
+              - from_port        = 8080
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 8080
+            },
+        ] -> null
+      - name                   = "Example Node.js App" -> null
+      - owner_id               = "240253503015" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {} -> null
+      - vpc_id                 = "vpc-e0b4b69a" -> null
+    }
+
+Plan: 0 to add, 0 to change, 2 to destroy.
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+
+module.nodejs_application.aws_instance.nodejs_app: Destroying... [id=i-0c979f32554b739bc]
+module.nodejs_application.aws_instance.nodejs_app: Still destroying... [id=i-0c979f32554b739bc, 10s elapsed]
+module.nodejs_application.aws_instance.nodejs_app: Still destroying... [id=i-0c979f32554b739bc, 20s elapsed]
+module.nodejs_application.aws_instance.nodejs_app: Still destroying... [id=i-0c979f32554b739bc, 30s elapsed]
+module.nodejs_application.aws_instance.nodejs_app: Still destroying... [id=i-0c979f32554b739bc, 40s elapsed]
+module.nodejs_application.aws_instance.nodejs_app: Destruction complete after 49s
+module.nodejs_application.aws_security_group.nodejs_app: Destroying... [id=sg-0e7e6387127c71c3b]
+module.nodejs_application.aws_security_group.nodejs_app: Destruction complete after 4s
+
+Destroy complete! Resources: 2 destroyed.
